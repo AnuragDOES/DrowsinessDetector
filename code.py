@@ -11,8 +11,8 @@ def calculate_EAR(eye):
     return ear_aspect_ratio
 
 
-cap = cv2.VideoCapture(1) 
-#the number in this function is telling the the camera device number for your device, so we need to choose it for our own
+cap = cv2.VideoCapture(0)
+# the number in this function is telling the the camera device number for your device, so we need to choose it for our own
 hog_face_detector = dlib.get_frontal_face_detector()
 dlib_facelandmark = dlib.shape_predictor(
     "shape_predictor_68_face_landmarks.dat")
