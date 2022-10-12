@@ -103,17 +103,20 @@ with mpMesh.FaceMesh(
             )
             EAR = min(aspectRatio(image, results, RIGHT_EYE),
                       aspectRatio(image, results, LEFT_EYE))
+            LAR = aspectRatio(image, results, LIPS)
             frame += 1
             if frame == 50:
                 normalEAR = EAR
             if frame > 50:
                 level = sleepyLevel(EAR, normalEAR, level)
             image = cv.flip(image, 1)
-            cv.putText(image, f'EAR: {round(EAR,3)},normal:{round(normalEAR,1)},{time}', (20, 70),
+            cv.putText(image, f'EAR: {round(EAR,3)},{time}', (20, 70),
                        cv.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 1)
             if warning:
                 cv.putText(image, f'{level}!!', (20, 120),
                            cv.FONT_HERSHEY_PLAIN, 8, (255, 0, 0), 3)
+            cv.putText(image, f'LAR: {round(LAR,3)},{time}', (300, 70),
+                       cv.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 1)
         cv.imshow('MediaPipe Face Mesh', image)
         if cv.waitKey(5) & 0xFF == ord('q'):
             break
