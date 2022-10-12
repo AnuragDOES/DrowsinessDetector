@@ -11,13 +11,13 @@ LEFT_EYE = [362, 382, 381, 380, 374, 373, 390,
 LIPS = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95,
         185, 40, 39, 37, 0, 267, 269, 270, 409, 415, 310, 311, 312, 13, 82, 81, 42, 183, 78]
 
-capture = cv.VideoCapture(0)
+capture = cv.VideoCapture(1)
 frame = 0
 level = 0
 time = 0
 normalEAR = 0.0
-warning = False
-
+normalarr = []
+# warning = False
 mpDrawing = mp.solutions.drawing_utils
 mpMesh = mp.solutions.face_mesh
 
@@ -41,24 +41,13 @@ def aspectRatio(image, outputs, part):
     return numerator/(count*denominator)
 
 
-def sleepyLevel(ratio, normalRatio, preLevel):
+def sleepyLevel(ratio, normalRatio):
     global time
     global warning
-    if 0.50*normalRatio <= ratio and ratio <= 0.8*normalRatio:
-        level = 1
-    elif 0.15*normalRatio <= ratio and ratio <= 0.50*normalRatio:
-        level = 2
-    elif ratio <= 0.15*normalRatio:
-        level = 3
-    else:
-        level = 0
-    if level > 0 and preLevel <= level:
-        time += 1
-        if time > 10:
-            warning = True
-    else:
-        time = 0
-        warning = False
+    if ratio < normalRatio and time > 50:
+        warning = "Medium Warning"
+    # input to see if the driver sees the warning or not
+
     return level
 
 
@@ -105,12 +94,15 @@ with mpMesh.FaceMesh(
                       aspectRatio(image, results, LEFT_EYE))
             LAR = aspectRatio(image, results, LIPS)
             frame += 1
-            if frame == 50:
-                normalEAR = EAR
-            if frame > 50:
+            if frame < 50:
+                normalEAR += EAR
+            elif frame == 50:
+                normalEAR += EAR
+                normalEAR = (normalEAR/50)
+            else:
                 level = sleepyLevel(EAR, normalEAR, level)
             image = cv.flip(image, 1)
-            cv.putText(image, f'EAR: {round(EAR,3)},{time}', (20, 70),
+            cv.putText(image, f'EAR: {round(EAR,3)},normal:{round(normalEAR,5)},{time}', (100, 100),
                        cv.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 1)
             if warning:
                 cv.putText(image, f'{level}!!', (20, 120),
