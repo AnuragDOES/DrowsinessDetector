@@ -114,14 +114,14 @@ while True:
 
             draw_landmarks(image, outputs, FACE, COLOR_GREEN)
 
-            draw_landmarks(image, outputs, LEFT_EYE_TOP_BOTTOM, COLOR_RED)
-            draw_landmarks(image, outputs, LEFT_EYE_LEFT_RIGHT, COLOR_RED)
+            draw_landmarks(image, outputs, LEFT_EYE, COLOR_RED)
+            #draw_landmarks(image, outputs, LEFT_EYE_LEFT_RIGHT, COLOR_RED)
 
             ratio_left = get_aspect_ratio(
                 image, outputs, LEFT_EYE_TOP_BOTTOM, LEFT_EYE_LEFT_RIGHT)
 
-            draw_landmarks(image, outputs, RIGHT_EYE_TOP_BOTTOM, COLOR_RED)
-            draw_landmarks(image, outputs, RIGHT_EYE_LEFT_RIGHT, COLOR_RED)
+            draw_landmarks(image, outputs, RIGHT_EYE, COLOR_RED)
+            #draw_landmarks(image, outputs, RIGHT_EYE_LEFT_RIGHT, COLOR_RED)
 
             ratio_right = get_aspect_ratio(
                 image, outputs, RIGHT_EYE_TOP_BOTTOM, RIGHT_EYE_LEFT_RIGHT)
@@ -139,8 +139,8 @@ while True:
                     'Drowsy Alert: It Seems you are sleeping.. please wake up')
                 speech.runAndWait()
 
-            draw_landmarks(image, outputs, UPPER_LOWER_LIPS, COLOR_BLUE)
-            draw_landmarks(image, outputs, LEFT_RIGHT_LIPS, COLOR_BLUE)
+            draw_landmarks(image, outputs, LIPS, COLOR_BLUE)
+           # draw_landmarks(image, outputs, LEFT_RIGHT_LIPS, COLOR_BLUE)
 
             ratio_lips = get_aspect_ratio(
                 image, outputs, UPPER_LOWER_LIPS, LEFT_RIGHT_LIPS)
@@ -149,7 +149,8 @@ while True:
                 speech.say(
                     'Drowsy Warning: You looks tired.. please take rest')
                 speech.runAndWait()
-
+            cv.putText(image, f'EAR: {ratio}', (20, 70),
+                       cv.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 1)
         cv.imshow("FACE MESH", image)
         if cv.waitKey(1) & 255 == 27:
             break
