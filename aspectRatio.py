@@ -1,6 +1,7 @@
 import cv2 as cv
+from functions import aspectRatio, sleepyLevel, draw_landmarks
 import mediapipe as mp
-from scipy.spatial import distance
+
 LEFT_EYE_LEFT_RIGHT = [263, 362]
 RIGHT_EYE_LEFT_RIGHT = [133, 33]
 
@@ -11,54 +12,15 @@ LEFT_EYE = [362, 382, 381, 380, 374, 373, 390,
 LIPS = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95,
         185, 40, 39, 37, 0, 267, 269, 270, 409, 415, 310, 311, 312, 13, 82, 81, 42, 183, 78]
 
-capture = cv.VideoCapture(1)
+capture = cv.VideoCapture(2)
 frame = 0
 level = 0
 time = 0
 normalEAR = 0.0
 normalarr = []
-# warning = False
+warning = ""
 mpDrawing = mp.solutions.drawing_utils
 mpMesh = mp.solutions.face_mesh
-
-
-def aspectRatio(image, outputs, part):
-    landmark = outputs.multi_face_landmarks[0]
-    numerator, count = 0, 0
-    height, width = image.shape[:2]
-    for i in range(1, int(len(part)/2)):
-        top = landmark.landmark[part[i]]
-        bottom = landmark.landmark[part[-i]]
-        topPt = int(top.x * width), int(top.y * height)
-        bottomPt = int(bottom.x * width), int(bottom.y * height)
-        numerator += distance.euclidean(topPt, bottomPt)
-        count += 1
-    left = landmark.landmark[part[0]]
-    right = landmark.landmark[part[int(len(part)/2)]]
-    leftPt = int(left.x*width), int(left.y*height)
-    rightPt = int(right.x*width), int(right.y*height)
-    denominator = distance.euclidean(leftPt, rightPt)
-    return numerator/(count*denominator)
-
-
-def sleepyLevel(ratio, normalRatio):
-    global time
-    global warning
-    if ratio < normalRatio and time > 50:
-        warning = "Medium Warning"
-    # input to see if the driver sees the warning or not
-
-    return level
-
-
-def draw_landmarks(image, outputs, land_mark, color):
-    height, width = image.shape[:2]
-    for lms in land_mark:
-        point = outputs.multi_face_landmarks[0].landmark[lms]
-        point_scale = ((int)(point.x * width), (int)(point.y*height))
-        cv.circle(image, point_scale, 2, color, 1)
-
-
 with mpMesh.FaceMesh(
         max_num_faces=1,
         refine_landmarks=True,
@@ -100,7 +62,7 @@ with mpMesh.FaceMesh(
                 normalEAR += EAR
                 normalEAR = (normalEAR/50)
             else:
-                level = sleepyLevel(EAR, normalEAR, level)
+                level = sleepyLevel(EAR, normalEAR)
             image = cv.flip(image, 1)
             cv.putText(image, f'EAR: {round(EAR,3)},normal:{round(normalEAR,5)},{time}', (100, 100),
                        cv.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 1)
