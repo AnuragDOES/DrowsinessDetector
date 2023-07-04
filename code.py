@@ -12,7 +12,6 @@ def calculate_EAR(eye):
 
 
 cap = cv2.VideoCapture(2)
-# the number in this function is telling the the camera device number for your device, so we need to choose it for our own
 hog_face_detector = dlib.get_frontal_face_detector()
 dlib_facelandmark = dlib.shape_predictor(
     "shape_predictor_68_face_landmarks.dat")
